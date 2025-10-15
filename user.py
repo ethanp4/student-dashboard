@@ -9,9 +9,11 @@ class Role(Enum):
 
 class User:
 	user_list: list[User] = []
+	max_id: int = 0
 
 	def __init__(self, username: str, password: str, role: Role):
-		self.user_id: int = len(User.user_list)
+		self.user_id: int = User.max_id
+		User.max_id += 1
 		self.username: str = username
 		self.password: str = password
 		self.role: Role = role
@@ -23,3 +25,7 @@ class User:
 				return user
 		return False
 	
+	def __str__(self):
+		return f"""User id: {self.user_id}
+Username: {self.username}
+Role: {self.role.name}"""
