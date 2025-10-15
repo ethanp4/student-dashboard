@@ -15,7 +15,6 @@ class User:
 		self.username: str = username
 		self.password: str = password
 		self.role: Role = role
-		self.
 
 	@staticmethod
 	def authenticate_user(username: str, password:str) -> Union[User, bool]:
