@@ -11,6 +11,8 @@ class Course:
 		self.title = title
 		self.owner_id = owner_id
 		self.attendees_ids: set[int] = set() # unique ids of users attending the course
+		self.assignment_ids: set[int] = set()
+
 	
 	@staticmethod
 	def find_course_by_id(course_id: int) -> Course | bool:
@@ -22,7 +24,7 @@ class Course:
 
 	@staticmethod
 	def find_courses_by_attendee_id(attendee_id: int) -> list[Course]:
-		ret = []
+		ret: list[Course] = []
 		for course in Course.course_list:
 			if attendee_id in course.attendees_ids:
 				ret.append(course)
@@ -30,7 +32,7 @@ class Course:
 	
 	@staticmethod
 	def find_courses_by_owner_id(owner_id: int) -> list[Course]:
-		ret = []
+		ret: list[Course] = []
 		for course in Course.course_list:
 			if owner_id == course.owner_id:
 				ret.append(course)

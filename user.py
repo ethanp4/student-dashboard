@@ -17,6 +17,14 @@ class User:
 		self.username: str = username
 		self.password: str = password
 		self.role: Role = role
+		self.submitted_assignment_ids: set[int] = set() 
+
+	def submit_assignment(self, assignment_id: int) -> bool:
+		if assignment_id in self.submitted_assignment_ids:
+			print("Assignment already submitted")
+			return False
+		self.submitted_assignment_ids.add(assignment_id)
+		return True
 
 	@staticmethod
 	def authenticate_user(username: str, password:str) -> Union[User, bool]:

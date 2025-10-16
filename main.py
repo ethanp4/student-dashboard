@@ -1,19 +1,10 @@
+from datetime import date, timedelta
+from assignment import Assignment
 from course import Course
 from user import User, Role
 from utility import create_course, delete_course, view_your_courses, edit_course_info
 
-def authenticate_user(username = "", password = "") -> User:
-	# for testing purposes
-	if username != "" and password != "":
-		authenticated_user = User.authenticate_user(username, password)
-
-		if type(authenticated_user) != User:
-			print("Incorrect login, try again")
-			return authenticate_user()
-		else:
-			print("Correct login")
-			return authenticated_user
-
+def authenticate_user(username: str = "", password: str = "") -> User:
 	while True:
 		username = input("Enter your username: ")
 		password = input("Enter your password: ")
@@ -46,6 +37,26 @@ Course.course_list.extend([
 	Course("History 200", 2),
 	Course("English 300", 2)
 ])
+
+today = date.today()
+
+Assignment.assignment_list.extend([
+	Assignment("Math Assignment 1", today, 0),
+	Assignment("Physics Assignment 1", today + timedelta(days=1), 1),
+	Assignment("Chemistry Assignment 1", today + timedelta(days=1), 2),
+	Assignment("Biology Assignment 1", today + timedelta(days=1), 3),
+	Assignment("History Assignment 1", today + timedelta(days=2), 4),
+	Assignment("English Assignment 1", today + timedelta(days=2), 5)
+])
+
+Course.course_list[0].attendees_ids.update({3, 4, 5})
+Course.course_list[1].attendees_ids.update({3, 4})
+Course.course_list[2].attendees_ids.update({4, 5, 6})
+Course.course_list[3].attendees_ids.update({5, 6})
+Course.course_list[4].attendees_ids.update({3, 6})
+Course.course_list[5].attendees_ids.update({3, 4, 5, 6})
+
+
 
 authenticated_user = authenticate_user()
 		
