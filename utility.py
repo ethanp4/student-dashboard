@@ -18,7 +18,6 @@ def create_course(calling_user: User) -> Union[bool, Course]:
 	owner_id = int(input("Enter owner id: "))
 	new_course = Course(title, owner_id)
 
-	Course.course_list.append(new_course)
 	print("Created new course!")
 	print(new_course)
 	return new_course
@@ -95,12 +94,15 @@ def view_your_courses(calling_user: User):
 				print("====================")
 		case Role.TEACHER:
 			courses = Course.find_courses_by_owner_id(calling_user.user_id)
+			for course in courses:
+				print(course)
+				print("====================")
 		case Role.ADMIN:
 			courses = Course.course_list
+			for course in courses:
+				print(course)
+				print("====================")
 
-	for course in courses:
-		print(course)
-		print("====================")
 
 def create_assignment(calling_user: User, course_id: int):
 	if calling_user.role != Role.TEACHER and calling_user.role != Role.ADMIN:

@@ -12,6 +12,7 @@ class Course:
 		self.owner_id = owner_id
 		self.attendees_ids: set[int] = set() # unique ids of users attending the course
 		self.assignment_ids: set[int] = set()
+		Course.course_list.append(self)
 
 	
 	@staticmethod

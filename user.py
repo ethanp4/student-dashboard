@@ -18,6 +18,7 @@ class User:
 		self.password: str = password
 		self.role: Role = role
 		self.submitted_assignment_ids: set[int] = set() 
+		User.user_list.append(self)
 
 	def submit_assignment(self, assignment_id: int) -> bool:
 		if assignment_id in self.submitted_assignment_ids:

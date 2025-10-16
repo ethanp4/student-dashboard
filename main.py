@@ -17,37 +17,31 @@ def authenticate_user(username: str = "", password: str = "") -> User:
 			print("Correct login")
 			return authenticated_user
 
-User.user_list.extend([
-	User("a1", "pass", Role.ADMIN),
-	User("t1", "pass", Role.TEACHER), # id 1
-	User("t2", "pass", Role.TEACHER), # id 2
-	User("s1", "pass", Role.STUDENT),
-	User("s2", "pass", Role.STUDENT),
-	User("s3", "pass", Role.STUDENT),
-	User("s4", "pass", Role.STUDENT),
-	User("s5", "pass", Role.STUDENT),
-	User("s6", "pass", Role.STUDENT),
-])
+User("a1", "pass", Role.ADMIN)
+User("t1", "pass", Role.TEACHER) # id 1
+User("t2", "pass", Role.TEACHER) # id 2
+User("s1", "pass", Role.STUDENT)
+User("s2", "pass", Role.STUDENT)
+User("s3", "pass", Role.STUDENT)
+User("s4", "pass", Role.STUDENT)
+User("s5", "pass", Role.STUDENT)
+User("s6", "pass", Role.STUDENT)
 
-Course.course_list.extend([
-	Course("Math 100", 1),
-	Course("Physics 100", 1),
-	Course("Chemistry 200", 1),
-	Course("Biology 200", 2),
-	Course("History 200", 2),
-	Course("English 300", 2)
-])
+Course("Math 100", 1)
+Course("Physics 100", 1)
+Course("Chemistry 200", 1)
+Course("Biology 200", 2)
+Course("History 200", 2)
+Course("English 300", 2)
 
 today = date.today()
 
-Assignment.assignment_list.extend([
-	Assignment("Math Assignment 1", today, 0),
-	Assignment("Physics Assignment 1", today + timedelta(days=1), 1),
-	Assignment("Chemistry Assignment 1", today + timedelta(days=1), 2),
-	Assignment("Biology Assignment 1", today + timedelta(days=1), 3),
-	Assignment("History Assignment 1", today + timedelta(days=2), 4),
-	Assignment("English Assignment 1", today + timedelta(days=2), 5)
-])
+Assignment("Math Assignment 1", today, 0)
+Assignment("Physics Assignment 1", today + timedelta(days=1), 1)
+Assignment("Chemistry Assignment 1", today + timedelta(days=1), 2)
+Assignment("Biology Assignment 1", today + timedelta(days=1), 3)
+Assignment("History Assignment 1", today + timedelta(days=2), 4)
+Assignment("English Assignment 1", today + timedelta(days=2), 5)
 
 Course.course_list[0].attendees_ids.update({3, 4, 5})
 Course.course_list[1].attendees_ids.update({3, 4})
@@ -55,8 +49,6 @@ Course.course_list[2].attendees_ids.update({4, 5, 6})
 Course.course_list[3].attendees_ids.update({5, 6})
 Course.course_list[4].attendees_ids.update({3, 6})
 Course.course_list[5].attendees_ids.update({3, 4, 5, 6})
-
-
 
 authenticated_user = authenticate_user()
 		
