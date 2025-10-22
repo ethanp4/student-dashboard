@@ -130,7 +130,7 @@ def create_assignment(calling_user: User, course_id: int):
 	print(new_assignment)
 	return new_assignment
 
-def view_schedule(calling_user: User):
+def get_assignments_for_user(calling_user: User) -> list[Assignment]:
 	assignments = []
 	match calling_user.role:
 		case Role.ADMIN:
@@ -143,7 +143,10 @@ def view_schedule(calling_user: User):
 			courses = Course.find_courses_by_attendee_id(calling_user.user_id)
 			for course in courses:
 				assignments.extend(Assignment.find_assignments_by_course_id(course.course_id))
+	return assignments
 
+def view_schedule(calling_user: User):
+	assignments = get_assignments_for_user(calling_user)
 	if len(assignments) == 0:
 		print("No assignments found!")
 		return
@@ -153,10 +156,30 @@ def view_schedule(calling_user: User):
 		submitted_status = assignment.assignment_id in calling_user.submitted_assignment_ids
 		print(f"{Colours.BOLD}===================={Colours.RESET}")
 		print(assignment)
-		if submitted_status:
-			print(f"{Colours.GREEN}Assignment is submitted!{Colours.RESET}")
-		else:
-			print(f"{Colours.RED}Assignment is not submitted!{Colours.RESET}")
+		if calling_user.role == Role.STUDENT:
+			print_submission_status_text(assignment, calling_user)
+
+def notify_of_due_dates(calling_user: User, days_ahead):
+	assignments = get_assignments_for_user(calling_user)
+	if len(assignments) == 0:
+		return
+	today = date.today()
+	upcoming_assignments = [a for a in assignments if 0 <= (a.due_date - today).days <= days_ahead]
+	if len(upcoming_assignments) == 0:
+		return
+	print(f"{Colours.BOLD}{Colours.YELLOW}You have upcoming assignments due within the next {days_ahead} days:{Colours.RESET}")
+	for assignment in upcoming_assignments:
+		submitted_status = assignment.assignment_id in calling_user.submitted_assignment_ids
+		print(f"{Colours.BOLD}===================={Colours.RESET}")
+		print(assignment)
+		if calling_user.role == Role.STUDENT:
+			print_submission_status_text(assignment, calling_user)
+
+def print_submission_status_text(assignment: Assignment, calling_user: User):
+	if assignment.assignment_id in calling_user.submitted_assignment_ids:
+		print(f"{Colours.GREEN}Assignment is submitted!{Colours.RESET}")
+	else:
+		print(f"{Colours.RED}Assignment is not submitted!{Colours.RESET}")
 
 def submit_assignment(calling_user: User):
 	if calling_user.role != Role.STUDENT:
@@ -181,3 +204,5 @@ def submit_assignment(calling_user: User):
 		return True
 	else:
 		return False
+	
+	

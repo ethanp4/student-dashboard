@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from assignment import Assignment
 from course import Course
 from user import User, Role
-from utility import create_course, delete_course, submit_assignment, view_schedule, view_your_courses, edit_course_info
+from utility import create_course, delete_course, notify_of_due_dates, submit_assignment, view_schedule, view_your_courses, edit_course_info
 
 def authenticate_user(username: str = "", password: str = "") -> User:
 	while True:
@@ -15,6 +15,8 @@ def authenticate_user(username: str = "", password: str = "") -> User:
 			print("Incorrect login, try again")
 		else:
 			print("Correct login")
+			if (authenticated_user.role != Role.ADMIN):
+				notify_of_due_dates(authenticated_user, 3)
 			return authenticated_user
 
 User("a1", "pass", Role.ADMIN)
