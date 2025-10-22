@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from assignment import Assignment
 from course import Course
 from user import User, Role
-from utility import create_course, delete_course, view_your_courses, edit_course_info
+from utility import create_course, delete_course, submit_assignment, view_schedule, view_your_courses, edit_course_info
 
 def authenticate_user(username: str = "", password: str = "") -> User:
 	while True:
@@ -35,13 +35,19 @@ Course("History 200", 2)
 Course("English 300", 2)
 
 today = date.today()
-
 Assignment("Math Assignment 1", today, 0)
 Assignment("Physics Assignment 1", today + timedelta(days=1), 1)
 Assignment("Chemistry Assignment 1", today + timedelta(days=1), 2)
 Assignment("Biology Assignment 1", today + timedelta(days=1), 3)
 Assignment("History Assignment 1", today + timedelta(days=2), 4)
 Assignment("English Assignment 1", today + timedelta(days=2), 5)
+
+Assignment("Math Assignment 2", today + timedelta(days=7), 0)
+Assignment("Physics Assignment 2", today + timedelta(days=8), 1)
+Assignment("Chemistry Assignment 2", today + timedelta(days=8), 2)
+Assignment("Biology Assignment 2", today + timedelta(days=8), 3)
+Assignment("History Assignment 2", today + timedelta(days=9), 4)
+Assignment("English Assignment 2", today + timedelta(days=9), 5)
 
 Course.course_list[0].attendees_ids.update({3, 4, 5})
 Course.course_list[1].attendees_ids.update({3, 4})
@@ -53,13 +59,15 @@ Course.course_list[5].attendees_ids.update({3, 4, 5, 6})
 authenticated_user = authenticate_user()
 		
 while True:
-	selection = int(input("""0) Exit program
-1) Create a new course (admin)
-2) Delete course
-3) View courses (student, instructor, admin)
-4) Edit course info (instructor)
-5) View user list
-6) Change user\n"""))
+	selection = int(input("""\n0) Exit program
+1) Create a new course (admin only)
+2) Delete course (admin only)
+3) View courses (all roles)
+4) Edit course info (instructor only)
+5) View user list (all roles)
+6) View upcoming dates (all roles)
+7) Submit assignment (students only)										 
+8) Change user\n"""))
 
 	match selection:
 		case 1:
@@ -80,6 +88,10 @@ while True:
 				print(user)
 				print("====================")
 		case 6:
+			view_schedule(authenticated_user)
+		case 7:
+			submit_assignment(authenticated_user)
+		case 8:
 			authenticated_user = authenticate_user()
 		case 0:
 			break

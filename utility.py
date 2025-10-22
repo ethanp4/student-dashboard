@@ -129,3 +129,55 @@ def create_assignment(calling_user: User, course_id: int):
 	print("Created new assignment!")
 	print(new_assignment)
 	return new_assignment
+
+def view_schedule(calling_user: User):
+	assignments = []
+	match calling_user.role:
+		case Role.ADMIN:
+			assignments = Assignment.assignment_list
+		case Role.TEACHER:
+			courses = Course.find_courses_by_owner_id(calling_user.user_id)
+			for course in courses:
+				assignments.extend(Assignment.find_assignments_by_course_id(course.course_id))
+		case Role.STUDENT:
+			courses = Course.find_courses_by_attendee_id(calling_user.user_id)
+			for course in courses:
+				assignments.extend(Assignment.find_assignments_by_course_id(course.course_id))
+
+	if len(assignments) == 0:
+		print("No assignments found!")
+		return
+	assignments.sort(key=lambda x: x.due_date, reverse=True)
+	print("Due dates visible for you: ")
+	for assignment in assignments:
+		submitted_status = assignment.assignment_id in calling_user.submitted_assignment_ids
+		print(f"{Colours.BOLD}===================={Colours.RESET}")
+		print(assignment)
+		if submitted_status:
+			print(f"{Colours.GREEN}Assignment is submitted!{Colours.RESET}")
+		else:
+			print(f"{Colours.RED}Assignment is not submitted!{Colours.RESET}")
+
+def submit_assignment(calling_user: User):
+	if calling_user.role != Role.STUDENT:
+		print(f"{Colours.RED}Access denied!{Colours.RESET}")
+		return False
+	
+	assignment_id = int(input("Enter assignment id to submit: "))
+	assignment = Assignment.find_assignment_by_id(assignment_id)
+	if type(assignment) is not Assignment:
+		return False
+	
+	course = Course.find_course_by_id(assignment.course_id)
+	if type(course) is not Course:
+		print("Course not found!")
+		return False
+	if calling_user.user_id not in course.attendees_ids:
+		print("You are not enrolled in the course for this assignment!")
+		return False
+
+	if calling_user.submit_assignment(assignment_id):
+		print("Assignment submitted successfully!")
+		return True
+	else:
+		return False
