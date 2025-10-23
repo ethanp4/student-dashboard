@@ -71,7 +71,6 @@ def edit_course_info(calling_user: User) -> Union[bool, None]:
 			create_assignment(calling_user, course_to_edit.course_id)
 		case _:
 			pass
-
 	print("Course information updated successfully!")
 
 #all types, different view for each type

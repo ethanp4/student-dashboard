@@ -4,7 +4,7 @@ from course import Course
 from user import User, Role
 from utility import create_course, delete_course, notify_of_due_dates, submit_assignment, view_schedule, view_your_courses, edit_course_info
 
-def authenticate_user(username: str = "", password: str = "") -> User:
+def authenticate_user() -> User:
 	while True:
 		username = input("Enter your username: ")
 		password = input("Enter your password: ")
@@ -59,7 +59,6 @@ Course.course_list[4].attendees_ids.update({3, 6})
 Course.course_list[5].attendees_ids.update({3, 4, 5, 6})
 
 authenticated_user = authenticate_user()
-		
 while True:
 	selection = int(input("""\n0) Exit program
 1) Create a new course (admin only)
