@@ -131,7 +131,7 @@ def create_assignment(calling_user: User, course_id: int):
 	return new_assignment
 
 def get_assignments_for_user(calling_user: User) -> list[Assignment]:
-	assignments = []
+	assignments: list[Assignment] = []
 	match calling_user.role:
 		case Role.ADMIN:
 			assignments = Assignment.assignment_list
@@ -153,13 +153,12 @@ def view_schedule(calling_user: User):
 	assignments.sort(key=lambda x: x.due_date, reverse=True)
 	print("Due dates visible for you: ")
 	for assignment in assignments:
-		submitted_status = assignment.assignment_id in calling_user.submitted_assignment_ids
 		print(f"{Colours.BOLD}===================={Colours.RESET}")
 		print(assignment)
 		if calling_user.role == Role.STUDENT:
 			print_submission_status_text(assignment, calling_user)
 
-def notify_of_due_dates(calling_user: User, days_ahead):
+def notify_of_due_dates(calling_user: User, days_ahead: int):
 	assignments = get_assignments_for_user(calling_user)
 	if len(assignments) == 0:
 		return
@@ -169,7 +168,6 @@ def notify_of_due_dates(calling_user: User, days_ahead):
 		return
 	print(f"{Colours.BOLD}{Colours.YELLOW}You have upcoming assignments due within the next {days_ahead} days:{Colours.RESET}")
 	for assignment in upcoming_assignments:
-		submitted_status = assignment.assignment_id in calling_user.submitted_assignment_ids
 		print(f"{Colours.BOLD}===================={Colours.RESET}")
 		print(assignment)
 		if calling_user.role == Role.STUDENT:
