@@ -79,28 +79,23 @@ def view_your_courses(calling_user: User):
 	match calling_user.role:
 		case Role.STUDENT:
 			courses = Course.find_courses_by_attendee_id(calling_user.user_id)
-			for course in courses:
-				print(course)
-				if len(course.assignment_ids) == 0:
-					print("No assignments")
-				else:
-					print("Assignments:")
-					for assignment_id in course.assignment_ids:
-						assignment = Assignment.find_assignment_by_id(assignment_id)
-						if type(assignment) is Assignment:
-							submitted = " (Submitted)" if assignment.assignment_id in calling_user.submitted_assignment_ids else ""
-							print(f"{Colours.UNDERLINE}{assignment.title}{Colours.RESET} - Due: {assignment.due_date}{submitted}")
-				print("====================")
 		case Role.TEACHER:
 			courses = Course.find_courses_by_owner_id(calling_user.user_id)
-			for course in courses:
-				print(course)
-				print("====================")
 		case Role.ADMIN:
 			courses = Course.course_list
-			for course in courses:
-				print(course)
-				print("====================")
+
+	for course in courses:
+		print(course)
+		if len(course.assignment_ids) == 0:
+			print("No assignments")
+		else:
+			print("Assignments:")
+			for assignment_id in course.assignment_ids:
+				assignment = Assignment.find_assignment_by_id(assignment_id)
+				if type(assignment) is Assignment:
+					submitted = " (Submitted)" if assignment.assignment_id in calling_user.submitted_assignment_ids else ""
+					print(f"ID: {assignment.assignment_id} - {Colours.UNDERLINE}{assignment.title}{Colours.RESET} - Due: {assignment.due_date}{submitted}")
+		print("====================")
 
 
 def create_assignment(calling_user: User, course_id: int):
