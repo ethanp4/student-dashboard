@@ -11,7 +11,8 @@ class User:
 	user_list: list[User] = []
 	max_id: int = 0
 
-	def __init__(self, username: str, password: str, role: Role):
+	def __init__(self, username: str, password: str, role: Role, subscription_status: bool):
+		self.subscription_status: bool = subscription_status
 		self.user_id: int = User.max_id
 		User.max_id += 1
 		self.username: str = username

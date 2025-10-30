@@ -1,5 +1,6 @@
 from __future__ import annotations
 from datetime import date
+from notifications import Notification, TargetType
 
 from course import Course
 
@@ -19,6 +20,8 @@ class Assignment:
     course = Course.find_course_by_id(course_id)
     if type(course) is Course:
       course.assignment_ids.add(self.assignment_id)
+    # make a notification
+    Notification(f"Assignment: {title} for course {course_id}", TargetType.COURSE_MEMBERS, due_date, course_id)
   
   @staticmethod
   def find_assignment_by_id(assignment_id: int) -> Assignment | bool:

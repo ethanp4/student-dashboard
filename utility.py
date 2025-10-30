@@ -4,6 +4,7 @@ from user import User, Role
 from assignment import Assignment
 from datetime import date
 from colours import Colours
+from notifications import Notification, TargetType
 
 #admin
 #create course
@@ -58,14 +59,17 @@ def edit_course_info(calling_user: User) -> Union[bool, None]:
 	match action:
 		case 1:
 			new_title = input("Enter new title: ")
+			Notification(f"Title of course {course_to_edit.title} changed to {new_title}", TargetType.ADMINS)
 			course_to_edit.title = new_title
 		case 2:
 			ids = input("Enter new member id(s) separated by a space: ")
 			new_member_ids = set(map(int, ids.split()))
+			Notification(f"New members added to course {course_to_edit.title}: {', '.join(map(str, new_member_ids))}", TargetType.ADMINS)
 			course_to_edit.attendees_ids.update(new_member_ids)
 		case 3:
 			ids = input("Enter member id(s) to remove separated by a space: ")
 			remove_member_ids = set(map(int, ids.split()))
+			Notification(f"Members removed from course {course_to_edit.title}: {', '.join(map(str, remove_member_ids))}", TargetType.ADMINS)
 			course_to_edit.attendees_ids.difference_update(remove_member_ids)
 		case 4:
 			create_assignment(calling_user, course_to_edit.course_id)
@@ -147,21 +151,6 @@ def view_schedule(calling_user: User):
 	assignments.sort(key=lambda x: x.due_date, reverse=True)
 	print("Due dates visible for you: ")
 	for assignment in assignments:
-		print(f"{Colours.BOLD}===================={Colours.RESET}")
-		print(assignment)
-		if calling_user.role == Role.STUDENT:
-			print_submission_status_text(assignment, calling_user)
-
-def notify_of_due_dates(calling_user: User, days_ahead: int):
-	assignments = get_assignments_for_user(calling_user)
-	if len(assignments) == 0:
-		return
-	today = date.today()
-	upcoming_assignments = [a for a in assignments if 0 <= (a.due_date - today).days <= days_ahead]
-	if len(upcoming_assignments) == 0:
-		return
-	print(f"{Colours.BOLD}{Colours.YELLOW}You have upcoming assignments due within the next {days_ahead} days:{Colours.RESET}")
-	for assignment in upcoming_assignments:
 		print(f"{Colours.BOLD}===================={Colours.RESET}")
 		print(assignment)
 		if calling_user.role == Role.STUDENT:
