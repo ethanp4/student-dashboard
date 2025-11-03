@@ -67,7 +67,7 @@ Course.course_list[5].attendees_ids.update({3, 4, 5, 6})
 
 authenticated_user = authenticate_user()
 while True:
-	selection = int(input(f"""\n0) Exit program
+	selection = input(f"""\n0) Exit program
 1) Create a new course (admin only)
 2) Delete course (admin only)
 3) View courses (all roles)
@@ -78,33 +78,33 @@ while True:
 8) Change user
 9) View notifications (all roles)
 10) {"Subscribe to premium ($5.99 / month)" if not authenticated_user.subscription_status else "Unsubscribe from premium"} (all roles)
-"""))
+""")
 
 	match selection:
-		case 1:
+		case "1":
 			create_course(authenticated_user)
 			pass
-		case 2:
+		case "2":
 			delete_course(authenticated_user)
 			pass
-		case 3:
+		case "3":
 			print("====================")
 			view_your_courses(authenticated_user)
 			pass
-		case 4:
+		case "4":
 			edit_course_info(authenticated_user)
-		case 5:
+		case "5":
 			print("====================")
 			for user in User.user_list:
 				print(user)
 				print("====================")
-		case 6:
+		case "6":
 			view_schedule(authenticated_user)
-		case 7:
+		case "7":
 			submit_assignment(authenticated_user)
-		case 8:
+		case "8":
 			authenticated_user = authenticate_user()
-		case 9:
+		case "9":
 			notifications = Notification.get_notifications(authenticated_user)
 			if type(notifications) is bool:
 				pass
@@ -114,10 +114,10 @@ while True:
 				for notification in notifications:
 					print(notification)
 
-		case 10:
+		case "10":
 			print(f"{Colours.YELLOW}We're sad to see you go.{Colours.RESET}" if authenticated_user.subscription_status else f"{Colours.GREEN}Thank you for choosing to become a premium D4L member!{Colours.RESET}")
 			authenticated_user.subscription_status = not authenticated_user.subscription_status
-		case 0:
+		case "0":
 			break
 		case _:
 			print("Invalid selection, try again")

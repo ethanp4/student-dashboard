@@ -5,6 +5,7 @@ from assignment import Assignment
 from datetime import date
 from colours import Colours
 from notifications import Notification, TargetType
+import user
 
 #admin
 #create course
@@ -16,7 +17,12 @@ def create_course(calling_user: User) -> Union[bool, Course]:
 		print(f"{Colours.RED}Access denied!{Colours.RESET}")
 		return False
 	title = input("Enter course title: ")
+	instructor_ids = {user.user_id for user in User.user_list if user.role == Role.TEACHER}
 	owner_id = int(input("Enter owner id: "))
+	if owner_id not in instructor_ids:
+		print("Invalid owner id!")
+		return False
+
 	new_course = Course(title, owner_id)
 
 	print("Created new course!")
@@ -63,7 +69,11 @@ def edit_course_info(calling_user: User) -> Union[bool, None]:
 			course_to_edit.title = new_title
 		case 2:
 			ids = input("Enter new member id(s) separated by a space: ")
+			valid_ids = {user.user_id for user in User.user_list} # any user type can be made a member of a course
 			new_member_ids = set(map(int, ids.split()))
+			if not new_member_ids.issubset(valid_ids):
+				print("Invalid member id(s)!")
+				return False
 			Notification(f"New members added to course {course_to_edit.title}: {', '.join(map(str, new_member_ids))}", TargetType.ADMINS)
 			course_to_edit.attendees_ids.update(new_member_ids)
 		case 3:
@@ -100,7 +110,6 @@ def view_your_courses(calling_user: User):
 					submitted = " (Submitted)" if assignment.assignment_id in calling_user.submitted_assignment_ids else ""
 					print(f"ID: {assignment.assignment_id} - {Colours.UNDERLINE}{assignment.title}{Colours.RESET} - Due: {assignment.due_date}{submitted}")
 		print("====================")
-
 
 def create_assignment(calling_user: User, course_id: int):
 	if calling_user.role != Role.TEACHER and calling_user.role != Role.ADMIN:
