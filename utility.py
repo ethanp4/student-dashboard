@@ -17,8 +17,12 @@ def create_course(calling_user: User) -> Union[bool, Course]:
 		print(f"{Colours.RED}Access denied!{Colours.RESET}")
 		return False
 	title = input("Enter course title: ")
+
 	instructor_ids = {user.user_id for user in User.user_list if user.role == Role.TEACHER}
-	owner_id = int(input("Enter owner id: "))
+	print(f"Valid instructor ids: {', '.join(map(str, instructor_ids))}")
+	owner_id = input("Enter owner id: ")
+	owner_id = int(owner_id) if owner_id.isdigit() else -1
+
 	if owner_id not in instructor_ids:
 		print("Invalid owner id!")
 		return False
@@ -34,10 +38,14 @@ def delete_course(calling_user: User) -> bool:
 		print(f"{Colours.RED}Access denied!{Colours.RESET}")
 		return False
 	
-	course_id = int(input("Enter course id to delete: "))
+	course_ids = {course.course_id for course in Course.course_list}
+	print(f"Valid course ids: {', '.join(map(str, course_ids))}")
+
+	course_id = input("Enter course id to delete: ")
+	course_id = int(course_id) if course_id.isdigit() else -1
 	course = Course.find_course_by_id(course_id)
 
-	if type(course) is not Course:
+	if type(course) is not Course or course.course_id not in course_ids:
 		return False
 
 	Course.course_list.remove(course)
@@ -50,17 +58,29 @@ def edit_course_info(calling_user: User) -> Union[bool, None]:
 		print(f"{Colours.RED}Access denied!{Colours.RESET}")
 		return False
 
-	course_id = int(input("Enter course id to edit: "))
-	course_to_edit = Course.course_list[course_id]
-	if course_to_edit.owner_id != calling_user.user_id:
-		print("You do not own this course!")
+	course_ids = {course.course_id for course in Course.find_courses_by_owner_id(calling_user.user_id)}
+	print(f"Your course ids: {', '.join(map(str, course_ids))}")
+
+	course_id = input("Enter course id to edit: ")
+	course_id = int(course_id) if course_id.isdigit() else -1
+
+	if course_id not in course_ids:
+		print("Invalid course id!")
 		return False
 
-	action = int(input("""What would you like to edit
+	course_to_edit = Course.course_list[course_id]
+
+	while True:
+		action = input("""What would you like to edit
 1) Change title
 2) Add members
 3) Remove members
-4) Create assignment"""))
+4) Create assignment""")
+		if not (action.isdigit() and int(action) in {1,2,3,4}):
+			print("Invalid input!")
+			continue
+		action = int(action)
+		break
 
 	match action:
 		case 1:
@@ -70,16 +90,19 @@ def edit_course_info(calling_user: User) -> Union[bool, None]:
 		case 2:
 			ids = input("Enter new member id(s) separated by a space: ")
 			valid_ids = {user.user_id for user in User.user_list} # any user type can be made a member of a course
-			new_member_ids = set(map(int, ids.split()))
+			new_member_ids = set(map(int, [ids for ids in ids.split() if ids.isdigit()]))
+
 			if not new_member_ids.issubset(valid_ids):
 				print("Invalid member id(s)!")
 				return False
 			Notification(f"New members added to course {course_to_edit.title}: {', '.join(map(str, new_member_ids))}", TargetType.ADMINS)
+			print(f"Added members: {', '.join(map(str, new_member_ids))}")
 			course_to_edit.attendees_ids.update(new_member_ids)
 		case 3:
 			ids = input("Enter member id(s) to remove separated by a space: ")
-			remove_member_ids = set(map(int, ids.split()))
+			remove_member_ids = set(map(int, [ids for ids in ids.split() if ids.isdigit()]))
 			Notification(f"Members removed from course {course_to_edit.title}: {', '.join(map(str, remove_member_ids))}", TargetType.ADMINS)
+			print(f"Removed members: {', '.join(map(str, remove_member_ids))}")
 			course_to_edit.attendees_ids.difference_update(remove_member_ids)
 		case 4:
 			create_assignment(calling_user, course_to_edit.course_id)
@@ -176,7 +199,10 @@ def submit_assignment(calling_user: User):
 		print(f"{Colours.RED}Access denied!{Colours.RESET}")
 		return False
 	
-	assignment_id = int(input("Enter assignment id to submit: "))
+	print("Your assignments: ")
+	view_schedule(calling_user)
+	assignment_id = input("Enter assignment id to submit: ")
+	assignment_id = int(assignment_id) if assignment_id.isdigit() else -1
 	assignment = Assignment.find_assignment_by_id(assignment_id)
 	if type(assignment) is not Assignment:
 		return False
@@ -191,6 +217,7 @@ def submit_assignment(calling_user: User):
 
 	if calling_user.submit_assignment(assignment_id):
 		print("Assignment submitted successfully!")
+		Notification(f"Assignment submitted: {assignment.title}", TargetType.COURSE_MEMBERS, target_course_id=course.course_id)
 		return True
 	else:
 		return False

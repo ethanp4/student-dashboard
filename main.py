@@ -76,7 +76,7 @@ while True:
 6) View upcoming dates (all roles)
 7) Submit assignment (students only)
 8) Change user
-9) View notifications (all roles)
+9) View notifications (all roles) {"" if not authenticated_user.subscription_status else f"({len(Notification.get_notifications(authenticated_user))} available)"}
 10) {"Subscribe to premium ($5.99 / month)" if not authenticated_user.subscription_status else "Unsubscribe from premium"} (all roles)
 """)
 
